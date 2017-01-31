@@ -149,11 +149,16 @@ echo -e '\E[32m'"Load Average :" $tecreset $loadaverage
 tecuptime=$(uptime | awk '{print $3,$4}' | cut -f1 -d,)
 echo -e '\E[32m'"System Uptime Days/(HH:MM) :" $tecreset $tecuptime
 
+# Check services
+service --status-all>/tmp/services
+echo -e '\E[32m'"Service status:" $tecreset $services
+cat /tmp/services | grep "fail2ban\|apache2\|ssh\|apparmor"
+
 # Unset Variables
 unset tecreset os architecture kernelrelease internalip externalip nameserver loadaverage
 
 # Remove Temporary Files
-rm /tmp/who /tmp/ramcache /tmp/diskusage
+rm /tmp/who /tmp/ramcache /tmp/diskusage /tmp/services
 }
 fi
 shift $(($OPTIND -1))

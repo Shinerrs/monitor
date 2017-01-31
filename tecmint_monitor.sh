@@ -142,7 +142,7 @@ echo -e '\E[32m'"Disk Usages :" $tecreset
 cat /tmp/diskusage
 
 # Check Load Average
-loadaverage=$(top -n 1 -b | grep "load average:" | awk '{print $10 $11 $12}')
+loadaverage=$(cat /proc/loadavg | awk '{print $1, $2, $3}')
 echo -e '\E[32m'"Load Average :" $tecreset $loadaverage
 
 # Check System Uptime

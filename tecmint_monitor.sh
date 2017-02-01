@@ -1,11 +1,13 @@
-                  ####################################################################################################
-                  #                                        Tecmint_monitor.sh                                        #
-                  # Written for Tecmint.com for the post www.tecmint.com/linux-server-health-monitoring-script/      #
-                  # If any bug, report us in the link below                                                          #
-                  # Free to use/edit/distribute the code below by                                                    #
-                  # giving proper credit to Tecmint.com and Author                                                   #
-                  #                                                                                                  #
-                  ####################################################################################################
+####################################################################################################
+#                                        Tecmint_monitor.sh                                        #
+# Written for Tecmint.com for the post www.tecmint.com/linux-server-health-monitoring-script/      #
+# If any bug, report us in the link below                                                          #
+# Free to use/edit/distribute the code below by                                                    #
+# giving proper credit to Tecmint.com and Author                                                   #
+#                                                                                                  #
+# Slight modifications by lw@wulu.eu                                                               # 
+#                                                                                                  #
+####################################################################################################
 #! /bin/bash
 # unset any variable which system may be using
 
@@ -26,7 +28,8 @@ then
 wd=$(pwd)
 basename "$(test -L "$0" && readlink "$0" || echo "$0")" > /tmp/scriptname
 scriptname=$(echo -e -n $wd/ && cat /tmp/scriptname)
-su -c "cp $scriptname /usr/bin/monitor" root && echo "Congratulations! Script Installed, now run monitor Command" || echo "Installation failed"
+su -c "cp $scriptname /usr/bin/monitor" root && \
+      echo "Congratulations! Script Installed, now run monitor Command" || echo "Installation failed"
 }
 fi
 
@@ -46,7 +49,8 @@ then
 tecreset=$(tput sgr0)
 
 # Check if connected to Internet or not
-ping -c 1 google.com &> /dev/null && echo -e '\E[32m'"Internet: $tecreset Connected" || echo -e '\E[32m'"Internet: $tecreset Disconnected"
+ping -c 1 google.com &> /dev/null && echo -e '\E[32m'"Internet: $tecreset Connected" || \
+      echo -e '\E[32m'"Internet: $tecreset Disconnected"
 
 # Check OS Type
 os=$(uname -o)
@@ -150,9 +154,12 @@ tecuptime=$(uptime | awk '{print $3,$4}' | cut -f1 -d,)
 echo -e '\E[32m'"System Uptime Days/(HH:MM) :" $tecreset $tecuptime
 
 # Check services
-service --status-all>/tmp/services
-echo -e '\E[32m'"Service status:" $tecreset $services
-cat /tmp/services | grep "fail2ban\|apache2\|ssh\|apparmor"
+services="fail2ban apache2 ssh apparmor"
+service --status-all > /tmp/services 2>&1
+echo -e '\E[32m'"Service status:" $tecreset 
+for s in $services; do
+  cat /tmp/services | grep "$s"
+done
 
 # Unset Variables
 unset tecreset os architecture kernelrelease internalip externalip nameserver loadaverage
